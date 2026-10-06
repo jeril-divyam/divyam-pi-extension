@@ -1,14 +1,14 @@
-# pi-divyam
+# divyam-pi-extension
 
 A [Pi](https://pi.dev) package that adds Divyam Router as the `divyam` model provider.
 
 ## Install
 
 ```bash
-pi install git:git@github.com:jeril-divyam/pi-divyam
+pi install git:git@github.com:jeril-divyam/divyam-pi-extension
 ```
 
-Remove it with `pi remove git:git@github.com:jeril-divyam/pi-divyam`.
+Remove it with `pi remove git:git@github.com:jeril-divyam/divyam-pi-extension`.
 
 ## API key
 
