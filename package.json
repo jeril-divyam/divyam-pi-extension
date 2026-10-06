@@ -1,0 +1,14 @@
+{
+  "name": "pi-divyam",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Divyam Router as a Pi model provider",
+  "type": "module",
+  "keywords": ["pi-package"],
+  "pi": {
+    "extensions": ["./extensions/divyam.ts"]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  }
+}
