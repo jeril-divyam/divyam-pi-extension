@@ -9,8 +9,7 @@ import {
 // Divyam Router is a drop-in for the OpenAI Chat Completions API, so Pi's built-in
 // openai-completions implementation handles requests, streaming, tools and usage.
 //
-// The key comes from auth.json (the install script or /login puts it there) or from
-// DIVYAM_API_KEY. DIVYAM_BASE_URL points Pi at another router deployment; the default
+// The key comes from auth.json, where /login stores it, or from DIVYAM_API_KEY. DIVYAM_BASE_URL points Pi at another router deployment; the default
 // is the demo environment.
 const PROVIDER = "divyam";
 const DEFAULT_BASE_URL = "https://api.demo.divyam.ai/v1";
