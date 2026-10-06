@@ -5,10 +5,10 @@ A [Pi](https://pi.dev) package that adds Divyam Router as the `divyam` model pro
 ## Install
 
 ```bash
-pi install git:git@github.com:jeril-divyam/divyam-pi-extension
+pi install git:github.com/jeril-divyam/divyam-pi-extension
 ```
 
-Remove it with `pi remove git:git@github.com:jeril-divyam/divyam-pi-extension`.
+Remove it with `pi remove git:github.com/jeril-divyam/divyam-pi-extension`.
 
 ## API key
 
