@@ -5,6 +5,9 @@
   "description": "Divyam Router as a Pi model provider",
   "type": "module",
   "keywords": ["pi-package"],
+  "scripts": {
+    "postinstall": "node scripts/postinstall.mjs"
+  },
   "pi": {
     "extensions": ["./extensions/divyam.ts"]
   },
