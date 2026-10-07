@@ -10,7 +10,7 @@ pi install git:github.com/jeril-divyam/divyam-pi-extension
 
 Then add your API key: run `/login` in Pi, choose **Sign in with an API key**, then **Divyam**. Pi saves it in `~/.pi/agent/auth.json`. Until a key is set, Pi shows a reminder at startup. You can set `DIVYAM_API_KEY` before starting Pi instead.
 
-The first time Pi starts with a key, it offers to add the Divyam models to `enabledModels` if that list is set. When it is, `/model` opens on that list and Ctrl+P cycles through it, so the Divyam models would be hidden. The change applies the next time Pi starts, and the question isn't asked again.
+If `enabledModels` is set in `~/.pi/agent/settings.json`, `/model` opens on that list and Ctrl+P cycles through it, which would hide the Divyam models. So the first time Pi starts with a key (or after `/reload`), the extension adds them to the list and tells you. They show there from the next start. This happens once: if you remove them, they stay removed.
 
 ## Configuration
 
@@ -27,8 +27,8 @@ pi remove git:github.com/jeril-divyam/divyam-pi-extension
 Pi doesn't run any package code on removal, so these stay behind:
 
 - The key in `auth.json`. Remove it with `/logout` before uninstalling.
-- The `divyam/...` entries in `enabledModels` in `~/.pi/agent/settings.json`, if you added them.
-- `~/.pi/agent/divyam-pi-extension.json`, which remembers that the `enabledModels` question was asked.
+- The `divyam/...` entries the extension added to `enabledModels` in `~/.pi/agent/settings.json`.
+- `~/.pi/agent/divyam-pi-extension.json`, which records that the models were added.
 
 ## Models
 

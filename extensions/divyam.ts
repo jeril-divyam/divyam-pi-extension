@@ -21,7 +21,7 @@ const MODELS = [
 ];
 const MODEL_REFS = MODELS.map(({ id }) => `${PROVIDER}/${id}`);
 
-// Records that the enabledModels question was asked, so a "no" is not asked again.
+// Records that the models were added to enabledModels, so entries removed later stay removed.
 const STATE_FILE = "divyam-pi-extension.json";
 
 function readJsonObject(path: string): Record<string, unknown> | undefined {
@@ -41,34 +41,28 @@ function hasDivyamPattern(enabledModels: unknown[]): boolean {
 }
 
 // A non-empty enabledModels makes /model open on that list and limits Ctrl+P cycling to
-// it, so the Divyam models stay out of sight unless they are added. Extensions cannot
+// it, which would hide the Divyam models, so they are added to it once. Extensions cannot
 // change the live scope, so the edit lands in settings.json and applies on the next start.
-async function offerScopedModels(ctx: ExtensionContext): Promise<void> {
+function addToEnabledModels(ctx: ExtensionContext): void {
 	const agentDir = getAgentDir();
 	const statePath = join(agentDir, STATE_FILE);
-	if (readJsonObject(statePath)?.scopedModelsAsked) return;
+	if (readJsonObject(statePath)?.enabledModelsAdded) return;
 
 	const settingsPath = join(agentDir, "settings.json");
-	const enabledModels = readJsonObject(settingsPath)?.enabledModels;
-	// Empty or unset means every model is already listed.
-	if (!Array.isArray(enabledModels) || enabledModels.length === 0) return;
-	if (hasDivyamPattern(enabledModels)) return;
+	const settings = readJsonObject(settingsPath);
+	const enabledModels = settings?.enabledModels;
+	// Empty or unset means every model is already listed; a later start checks again.
+	if (!settings || !Array.isArray(enabledModels) || enabledModels.length === 0) return;
 
-	const add = await ctx.ui.confirm(
-		"Divyam models",
-		`Add ${MODEL_REFS.join(" and ")} to enabledModels, so they show in /model and Ctrl+P? This applies the next time Pi starts.`,
-	);
-	if (add) {
-		// Re-read: settings may have changed while the dialog was open.
-		const settings = readJsonObject(settingsPath);
-		const current = settings?.enabledModels;
-		if (settings && Array.isArray(current) && !hasDivyamPattern(current)) {
-			settings.enabledModels = [...current, ...MODEL_REFS];
-			writeFileSync(settingsPath, JSON.stringify(settings, null, 2), "utf8");
-			ctx.ui.notify("Added the Divyam models to enabledModels. Restart Pi to see them in /model.", "info");
-		}
+	if (!hasDivyamPattern(enabledModels)) {
+		settings.enabledModels = [...enabledModels, ...MODEL_REFS];
+		writeFileSync(settingsPath, JSON.stringify(settings, null, 2), "utf8");
+		ctx.ui.notify(
+			"Added the Divyam models to enabledModels. They show in /model and Ctrl+P from the next start.",
+			"info",
+		);
 	}
-	writeFileSync(statePath, JSON.stringify({ scopedModelsAsked: true }, null, 2), "utf8");
+	writeFileSync(statePath, JSON.stringify({ enabledModelsAdded: true }, null, 2), "utf8");
 }
 
 export default function divyamProvider(pi: ExtensionAPI) {
@@ -88,10 +82,11 @@ export default function divyamProvider(pi: ExtensionAPI) {
 		})),
 	});
 
-	// session_start also fires on /new, /resume and /reload; one dialog at a time.
-	let offering = false;
+	// Also fires on /reload, so a key added with /login is picked up without a restart.
 	pi.on("session_start", (_event, ctx) => {
 		if (!ctx.hasUI) return;
+		// Without a key the models are unavailable, and a pattern naming them would make
+		// Pi warn at every start.
 		if (!ctx.modelRegistry.getAvailable().some((model) => model.provider === PROVIDER)) {
 			ctx.ui.notify(
 				"Divyam has no API key. Run /login, choose Sign in with an API key, then Divyam. Or set DIVYAM_API_KEY.",
@@ -99,18 +94,13 @@ export default function divyamProvider(pi: ExtensionAPI) {
 			);
 			return;
 		}
-		if (offering) return;
-		offering = true;
-		// Not awaited, so the dialog does not hold up startup.
-		void offerScopedModels(ctx)
-			.catch((error: unknown) => {
-				ctx.ui.notify(
-					`Divyam: could not update enabledModels: ${error instanceof Error ? error.message : String(error)}`,
-					"error",
-				);
-			})
-			.finally(() => {
-				offering = false;
-			});
+		try {
+			addToEnabledModels(ctx);
+		} catch (error) {
+			ctx.ui.notify(
+				`Divyam: could not update enabledModels: ${error instanceof Error ? error.message : String(error)}`,
+				"error",
+			);
+		}
 	});
 }
