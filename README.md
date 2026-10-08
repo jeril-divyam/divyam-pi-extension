@@ -18,7 +18,7 @@ Local-path installs, project installs (`pi install -l`) and `pi -e` runs leave `
 
 `/login` also changes the key, and `/logout` removes it.
 
-`DIVYAM_BASE_URL` points Pi at another router deployment. The default is `https://api.demo.divyam.ai/v1`.
+`DIVYAM_BASE_URL` points Pi at another router deployment. The default is `https://api.preview.divyam.ai/v1`.
 
 ## Uninstall
 

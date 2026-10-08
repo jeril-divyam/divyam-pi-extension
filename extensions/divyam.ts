@@ -5,9 +5,9 @@ import { MODELS, PROVIDER } from "../lib/divyam.mjs";
 // openai-completions implementation handles requests, streaming, tools and usage.
 //
 // The key comes from auth.json, where /login stores it, or from DIVYAM_API_KEY.
-// DIVYAM_BASE_URL points Pi at another router deployment; the default is the demo
+// DIVYAM_BASE_URL points Pi at another router deployment; the default is the preview
 // environment.
-const DEFAULT_BASE_URL = "https://api.demo.divyam.ai/v1";
+const DEFAULT_BASE_URL = "https://api.preview.divyam.ai/v1";
 
 export default function divyamProvider(pi: ExtensionAPI) {
 	pi.registerProvider(PROVIDER, {
